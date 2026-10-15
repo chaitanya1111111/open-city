@@ -9,7 +9,10 @@ import { Car, CAR_COLORS, setCarNight } from './vehicle.js';
 import { Traffic } from './traffic.js';
 
 const PARKED = [
-  [-22, -5.6, Math.PI / 2], [-34, 5.6, -Math.PI / 2], [5.6, -26, 0], [-5.6, -40, Math.PI],
+  [-22, -5.6, Math.PI / 2, 0], [-34, 5.6, -Math.PI / 2, 1],
+  [5.6, -26, 0, 2], [-5.6, -40, Math.PI, 3],
+  [-14, 5.6, -Math.PI / 2, 6], [14, 5.6, Math.PI / 2, 7],
+  [-5.6, -65, Math.PI, 8], [5.6, 65, 0, 9], [-65, -5.6, -Math.PI / 2, 10],
 ];
 
 // Game = the whole simulation (no DOM here, so it can be tested in Node).
@@ -31,9 +34,9 @@ export class Game {
     this.player.x = 0; this.player.z = 0; this.player.heading = Math.PI / 4;
     this.player.sync();
 
-    PARKED.forEach((p, i) => {
-      const c = new Car(scene, i, CAR_COLORS[(i * 3 + 1) % CAR_COLORS.length]);
-      c.place(p[0], p[1], p[2]);
+    PARKED.forEach(([x, z, heading, type], i) => {
+      const c = new Car(scene, type, CAR_COLORS[(i * 3 + 1) % CAR_COLORS.length]);
+      c.place(x, z, heading);
       this.parked.push(c);
     });
     this.traffic = new Traffic(scene, this.city, opts.traffic ?? (this.mobile ? 20 : CFG.trafficCount), this.rng);
@@ -156,7 +159,7 @@ export class Game {
     if (c.ai) { this.traffic.remove(c); c.ai = false; this.parked.push(c); c.speed = 0; }
     this.car = c;
     this.player.setVisible(false);
-    this.say('Drive anywhere! F to get out.', 3);
+    this.say('Take it for a ride! F to get out.', 3);
   }
 
   _exitCar() {
@@ -176,13 +179,15 @@ export class Game {
     let hit = false;
     for (const o of this.allCars()) {
       if (o === c) continue;
-      if (Math.abs(o.x - c.x) > 6 || Math.abs(o.z - c.z) > 6) continue;
+      const broadPhase = (c.t.len + o.t.len) * 0.55 + 2;
+      if (Math.abs(o.x - c.x) > broadPhase || Math.abs(o.z - c.z) > broadPhase) continue;
       const os = o.circles();
+      const hitDistance = Math.max(1.25, (c.t.wid + o.t.wid) * 0.38);
       for (const a of cs) for (const b of os) {
         let dx = a[0] - b[0], dz = a[1] - b[1];
         const d = Math.hypot(dx, dz);
-        if (d < 1.9 && d > 1e-4) {
-          const pen = 1.9 - d; dx /= d; dz /= d;
+        if (d < hitDistance && d > 1e-4) {
+          const pen = hitDistance - d; dx /= d; dz /= d;
           c.x += dx * pen * 0.5; c.z += dz * pen * 0.5;
           o.x -= dx * pen * 0.5; o.z -= dz * pen * 0.5;
           hit = true;
@@ -196,11 +201,13 @@ export class Game {
   _footVsCars() {
     const p = this.player;
     for (const o of this.allCars()) {
-      if (Math.abs(o.x - p.x) > 4 || Math.abs(o.z - p.z) > 4) continue;
+      const reach = o.t.len * 0.4 + 2;
+      if (Math.abs(o.x - p.x) > reach || Math.abs(o.z - p.z) > reach) continue;
       for (const c of o.circles()) {
         let dx = p.x - c[0], dz = p.z - c[1];
         const d = Math.hypot(dx, dz);
-        if (d < 1.35 && d > 1e-4) { const k = (1.35 - d) / d; p.x += dx * k; p.z += dz * k; }
+        const radius = Math.max(0.85, o.t.wid * 0.5 + 0.35);
+        if (d < radius && d > 1e-4) { const k = (radius - d) / d; p.x += dx * k; p.z += dz * k; }
       }
     }
   }

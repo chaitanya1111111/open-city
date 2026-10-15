@@ -107,7 +107,7 @@ for (const h of [0, 6, 12, 18, 22]) { game.hour = h; game.update(dt, input); ass
 
 // 8) vehicle tuning: speed limits, progressive steering, braking, reverse, handbrake, and lights
 const handlingScene = new THREE.Scene();
-assert.equal(VEHICLE_TYPES.length, 6, 'vehicle class catalog');
+assert.equal(VEHICLE_TYPES.length, 11, 'vehicle class catalog');
 const handlingCar = new Car(handlingScene, 4, CAR_COLORS[0]);
 const openRoad = { collide: (x, z) => ({ x, z, hit: false }) };
 const handling = handlingCar.tuning;
@@ -140,8 +140,23 @@ handlingScene.remove(handlingCar.group);
 const classCars = VEHICLE_TYPES.map((_, i) => new Car(handlingScene, i, CAR_COLORS[i % CAR_COLORS.length]));
 assert.equal(new Set(classCars.map((car) => car.t.name)).size, VEHICLE_TYPES.length, 'vehicle names are distinct');
 assert.equal(new Set(classCars.map((car) => car.t.len)).size, VEHICLE_TYPES.length, 'vehicle bodies have distinct lengths');
-assert(classCars.at(-1).tuning.topSpeed > classCars[0].tuning.topSpeed, 'sports classes lack class-specific top speeds');
+assert(classCars.find((car) => car.t.kind === 'motorcycle').tuning.topSpeed > classCars[0].tuning.topSpeed, 'motorcycle should be faster than a compact');
+assert(classCars.find((car) => car.t.kind === 'bicycle').tuning.topSpeed < classCars[0].tuning.topSpeed, 'bicycle should be slower than a compact');
+assert.equal(classCars.find((car) => car.t.kind === 'motorcycle').wheels.length, 2, 'motorcycle should have two wheels');
+assert.equal(classCars.find((car) => car.t.kind === 'bicycle').wheels.length, 2, 'bicycle should have two wheels');
+assert.equal(classCars.find((car) => car.t.kind === 'bus').wheels.length, 6, 'bus should have three axles');
+assert.equal(classCars.find((car) => car.t.kind === 'lorry').wheels.length, 6, 'lorry should have three axles');
+assert(classCars.find((car) => car.t.kind === 'lorry').t.len > classCars.find((car) => car.t.kind === 'van').t.len, 'lorry should be longer than a van');
+assert(game.parked.length >= 9, 'parked collection should offer the new vehicle classes');
+for (const kind of ['motorcycle', 'bicycle', 'van', 'bus', 'lorry']) {
+  assert(game.parked.some((vehicle) => vehicle.t.kind === kind), `parked collection lacks ${kind}`);
+}
+for (const car of classCars) {
+  for (let i = 0; i < 120; i++) car.drive(dt, { throttle: 1, steer: 0, handbrake: false }, openRoad);
+  assert(finite(car.x, car.z, car.speed), `${car.t.name} produced invalid driving state`);
+  assert(car.speed >= 0 && car.speed <= car.tuning.topSpeed, `${car.t.name} exceeded its speed limits`);
+}
 for (const car of classCars) handlingScene.remove(car.group);
 assert(VEHICLE_TUNING.topSpeed > 0, 'default vehicle tuning export is invalid');
-console.log('vehicle classes: six distinct models with class-specific performance and lights');
+console.log('vehicle classes: 11 distinct models, including bicycles, motorcycles and commercial vehicles');
 console.log('ALL TESTS PASSED');

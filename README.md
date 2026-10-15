@@ -2,7 +2,7 @@
 
 A GTA-style open-world city game that runs in the **browser** (desktop + phone). Built with plain JavaScript and [Three.js](https://threejs.org) - no game engine install needed.
 
-**What's in it:** a 14x14-block desktop map (~840 m; 12x12 on mobile) with eight procedural districts: airport, restricted defence base, desert badlands, village, race circuit, tech quarter, downtown, and suburbs. The map includes airport runways and terminal, desert cacti and rocks, a fenced base, a race track, village water tower, flyover, footbridge, and a district-colored minimap. It also includes a weathered scavenger player with a canvas backpack and risograph-inspired fabric texture, wandering civilians, drivable cars, AI traffic, day/night lighting, landscaped parks, cash-marker missions, and touch controls.
+**What's in it:** a 14x14-block desktop map (~840 m; 12x12 on mobile) with eight procedural districts: airport, restricted defence base, desert badlands, village, race circuit, tech quarter, downtown, and suburbs. The map includes airport runways and terminal, desert cacti and rocks, a fenced base, a race track, village water tower, flyover, footbridge, and a district-colored minimap. It also includes a weathered scavenger player with a canvas backpack and risograph-inspired fabric texture, wandering civilians, 11 drivable vehicle classes, AI traffic, day/night lighting, landscaped parks, cash-marker missions, and touch controls.
 
 The visual direction is a hazy, post-apocalyptic city: cracked asphalt, faded and stained building facades, sparse broken windows, sidewalk weeds, street debris, dusty amber light, atmospheric dust, worn vehicle paint, and a subtle vignette/film-grain finish. Buildings retain distinct district silhouettes and muted regional palettes; cars retain their distinct proportions and handling. These are lightweight procedural models, not photorealistic scanned assets, and the game does not yet use volumetric god rays, depth-of-field, or motion blur.
 
@@ -41,7 +41,7 @@ The visual direction is a hazy, post-apocalyptic city: cracked asphalt, faded an
 
 Add `?q=low` to the URL for a lighter graphics mode.
 
-Cars now include six original procedural body styles: city compact, family sedan, urban SUV, executive saloon, sport coupe, and supercar. Each has class-specific proportions, lights, trim, wheels, and acceleration/top-speed tuning; the HUD shows the current vehicle class. These are original generic designs rather than exact branded models or badge replicas. Handling uses progressive speed-sensitive steering, slower reverse, brake-before-reverse controls, natural coasting, a handbrake, and animated brake lights. W/Up accelerates; S/Down slows the car and selects reverse after stopping; Space applies the handbrake.
+The vehicle roster includes six car styles (city compact, family sedan, SUV, executive saloon, sport coupe, and supercar), a street motorcycle, a bicycle, a delivery van, a city bus, and a heavy lorry. Two-wheelers have distinct frames and two-wheel layouts; buses and lorries have larger bodies, multiple axles, and class-specific slower handling. These original procedural designs are not replicas of branded models. Parked examples of each class and mixed AI traffic make the full roster available to try. The HUD shows the vehicle class. W/Up accelerates; S/Down brakes and selects reverse after stopping; Space applies the handbrake.
 
 The minimap and top-center HUD label show your current district. The districts and overpasses are procedural scenic gameplay areas rather than a complete real-world simulation; map buildings remain mostly exterior-only.
 
@@ -51,7 +51,7 @@ The minimap and top-center HUD label show your current district. The districts a
 index.html        page, HUD, touch buttons
 src/config.js     world size, traffic count, day length  <- start tweaking here
 src/city.js       procedural city: buildings, roads, trees, lamps, collision
-src/vehicle.js    car model + driving physics
+src/vehicle.js    vehicle models + driving physics
 src/traffic.js    AI traffic
 src/player.js     character
 src/pedestrians.js sidewalk-walking civilian crowd

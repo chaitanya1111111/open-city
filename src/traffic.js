@@ -3,6 +3,7 @@ import { Car, CAR_COLORS } from './vehicle.js';
 import { clamp, wrapAngle } from './util.js';
 
 const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+const TRAFFIC_VEHICLE_WEIGHTS = [20, 22, 14, 8, 7, 4, 8, 4, 5, 3, 5];
 
 // AI cars follow the road grid, keep to the left lane (India!), turn at junctions
 // and slow down for anything in front of them.
@@ -46,9 +47,9 @@ export class Traffic {
       const x = seg.sx + seg.dx * t, z = seg.sz + seg.dz * t;
       if (this.cars.some((c) => Math.hypot(c.car.x - x, c.car.z - z) < 7)) continue;
       if (Math.hypot(x, z) < 25 && this.cars.length < 4) continue;
-      const roll = this.rng();
-      const type = roll < 0.26 ? 0 : roll < 0.59 ? 1 : roll < 0.82 ? 2
-        : roll < 0.92 ? 3 : roll < 0.98 ? 4 : 5;
+      let roll = this.rng() * TRAFFIC_VEHICLE_WEIGHTS.reduce((sum, weight) => sum + weight, 0);
+      let type = 0;
+      while (roll >= TRAFFIC_VEHICLE_WEIGHTS[type]) roll -= TRAFFIC_VEHICLE_WEIGHTS[type++];
       const car = new Car(scene, type, CAR_COLORS[Math.floor(this.rng() * CAR_COLORS.length)]);
       car.ai = true;
       car.place(x, z, Math.atan2(seg.dx, seg.dz));

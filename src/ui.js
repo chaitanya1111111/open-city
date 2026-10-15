@@ -43,7 +43,7 @@ export class UI {
     this.obj.textContent = 'Marker: ' + d + ' m';
 
     const key = this.touch ? 'ENTER button' : 'F';
-    this.prompt.textContent = g.prompt === 'enter' ? `Press ${key} to enter car` : g.prompt === 'exit' ? `Press ${key} to get out` : '';
+    this.prompt.textContent = g.prompt === 'enter' ? `Press ${key} to enter vehicle` : g.prompt === 'exit' ? `Press ${key} to get out` : '';
     this.toast.textContent = g.toastT > 0 ? g.toast : '';
 
     if ((this.mapSkip++ & 1) === 0) this._drawMap();
