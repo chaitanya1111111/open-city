@@ -17,7 +17,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.2, 4000);
+const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.2, 4000);
 
 const game = new Game(scene, camera, { mobile });
 const input = new Input(canvas, touch);

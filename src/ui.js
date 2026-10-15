@@ -4,7 +4,9 @@ export class UI {
     this.g = game; this.touch = touch;
     const $ = (id) => document.getElementById(id);
     this.speed = $('speed'); this.clock = $('clock'); this.money = $('money');
+    this.vehicleName = $('vehicleName');
     this.prompt = $('prompt'); this.toast = $('toast'); this.obj = $('objective'); this.fps = $('fps');
+    this.district = $('district');
     this.mm = $('minimap'); this.mctx = this.mm.getContext('2d');
     this.frames = 0; this.acc = 0; this.mapSkip = 0;
     this.mapCanvas = this._staticMap();
@@ -16,9 +18,10 @@ export class UI {
     const x = cv.getContext('2d');
     x.fillStyle = '#3b4048'; x.fillRect(0, 0, W, W);
     for (const row of c.blocks) for (const bl of row) {
-      x.fillStyle = bl.park ? '#2f5a34' : '#232a31';
+      const district = c.districtAtPosition(bl.cx, bl.cz);
+      x.fillStyle = bl.park ? '#2f5a34' : `#${district.color.toString(16).padStart(6, '0')}`;
       x.fillRect(bl.cx - c.lot / 2 + W / 2, bl.cz - c.lot / 2 + W / 2, c.lot, c.lot);
-      x.fillStyle = '#566170';
+      x.fillStyle = bl.park ? '#477147' : '#9aa0a0';
       for (const b of bl.b) x.fillRect(b.x0 + W / 2, b.z0 + W / 2, b.x1 - b.x0, b.z1 - b.z0);
     }
     this.W = W;
@@ -31,10 +34,12 @@ export class UI {
     if (this.acc >= 0.5) { this.fps.textContent = Math.round(this.frames / this.acc) + ' FPS'; this.acc = 0; this.frames = 0; }
 
     this.speed.textContent = g.car ? Math.round(g.speedKmh) + ' km/h' : '';
+    this.vehicleName.textContent = g.car ? g.car.t.name : '';
     const hh = Math.floor(g.hour), mm = Math.floor((g.hour - hh) * 60);
     this.clock.textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
     this.money.textContent = '$' + g.money;
     const f = g.focus, d = Math.round(Math.hypot(f.x - g.obj.x, f.z - g.obj.z));
+    this.district.textContent = g.city.districtAtPosition(f.x, f.z).label;
     this.obj.textContent = 'Marker: ' + d + ' m';
 
     const key = this.touch ? 'ENTER button' : 'F';

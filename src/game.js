@@ -4,6 +4,7 @@ import { mulberry32, clamp, wrapAngle, lerp } from './util.js';
 import { City } from './city.js';
 import { Environment } from './sky.js';
 import { Player } from './player.js';
+import { Pedestrians } from './pedestrians.js';
 import { Car, CAR_COLORS, setCarNight } from './vehicle.js';
 import { Traffic } from './traffic.js';
 
@@ -23,11 +24,11 @@ export class Game {
     this.car = null;
     this.hour = CFG.startHour;
     this.money = 0;
-    this.yaw = Math.PI / 4; this.pitch = 0.32; this.camDist = 5; this.lookIdle = 10;
+    this.yaw = Math.PI / 4; this.pitch = 0.32; this.camDist = 6.2; this.lookIdle = 10;
     this.prompt = ''; this.toast = ''; this.toastT = 0;
     this.speedKmh = 0; this.crash = 0; this.objTime = 0;
 
-    this.player.x = -10; this.player.z = -10; this.player.heading = Math.PI / 4;
+    this.player.x = 0; this.player.z = 0; this.player.heading = Math.PI / 4;
     this.player.sync();
 
     PARKED.forEach((p, i) => {
@@ -36,6 +37,10 @@ export class Game {
       this.parked.push(c);
     });
     this.traffic = new Traffic(scene, this.city, opts.traffic ?? (this.mobile ? 20 : CFG.trafficCount), this.rng);
+    this.pedestrians = new Pedestrians(scene, this.city, {
+      mobile: this.mobile,
+      count: opts.pedestrians ?? CFG.pedestrianCount,
+    });
 
     this.spot = new THREE.SpotLight(0xfff1cf, 0, 70, 0.55, 0.5, 1.2);
     scene.add(this.spot, this.spot.target);
@@ -107,6 +112,7 @@ export class Game {
 
     const all = this.allCars();
     this.traffic.update(dt, all, this.car ? null : this.player);
+    this.pedestrians.update(dt);
     for (const c of this.parked) if (c !== this.car) c.sync(dt, this.city);
 
     // --- objective ---
@@ -207,7 +213,7 @@ export class Game {
       const target = this.car.speed < -1 ? f.heading + Math.PI : f.heading;
       this.yaw += wrapAngle(target - this.yaw) * (1 - Math.exp(-dt * 2.5));
     }
-    const wantDist = this.car ? 8.5 + Math.abs(this.car.speed) * 0.06 : 4.8;
+    const wantDist = this.car ? 8.5 + Math.abs(this.car.speed) * 0.06 : 6.2;
     this.camDist += (wantDist - this.camDist) * Math.min(1, dt * 4);
 
     const px = f.x, py = f.y + (this.car ? 1.5 : 1.55), pz = f.z;

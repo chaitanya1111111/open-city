@@ -2,7 +2,9 @@
 
 A GTA-style open-world city game that runs in the **browser** (desktop + phone). Built with plain JavaScript and [Three.js](https://threejs.org) - no game engine install needed.
 
-**What's in it:** procedurally generated 8x8-block city (~500 m), third-person character, drivable cars (enter any car, even traffic), AI traffic that follows lanes and turns at junctions, day/night cycle with street lights and lit windows, minimap, cash-marker missions, touch controls for phones.
+**What's in it:** a 14x14-block desktop map (~840 m; 12x12 on mobile) with eight procedural districts: airport, restricted defence base, desert badlands, village, race circuit, tech quarter, downtown, and suburbs. The map includes airport runways and terminal, desert cacti and rocks, a fenced base, a race track, village water tower, flyover, footbridge, and a district-colored minimap. It also includes a weathered scavenger player with a canvas backpack and risograph-inspired fabric texture, wandering civilians, drivable cars, AI traffic, day/night lighting, landscaped parks, cash-marker missions, and touch controls.
+
+The visual direction is a hazy, post-apocalyptic city: cracked asphalt, faded and stained building facades, sparse broken windows, sidewalk weeds, street debris, dusty amber light, atmospheric dust, worn vehicle paint, and a subtle vignette/film-grain finish. Buildings retain distinct district silhouettes and muted regional palettes; cars retain their distinct proportions and handling. These are lightweight procedural models, not photorealistic scanned assets, and the game does not yet use volumetric god rays, depth-of-field, or motion blur.
 
 ## Run it on your computer (VS Code)
 
@@ -39,6 +41,10 @@ A GTA-style open-world city game that runs in the **browser** (desktop + phone).
 
 Add `?q=low` to the URL for a lighter graphics mode.
 
+Cars now include six original procedural body styles: city compact, family sedan, urban SUV, executive saloon, sport coupe, and supercar. Each has class-specific proportions, lights, trim, wheels, and acceleration/top-speed tuning; the HUD shows the current vehicle class. These are original generic designs rather than exact branded models or badge replicas. Handling uses progressive speed-sensitive steering, slower reverse, brake-before-reverse controls, natural coasting, a handbrake, and animated brake lights. W/Up accelerates; S/Down slows the car and selects reverse after stopping; Space applies the handbrake.
+
+The minimap and top-center HUD label show your current district. The districts and overpasses are procedural scenic gameplay areas rather than a complete real-world simulation; map buildings remain mostly exterior-only.
+
 ## Project map
 
 ```
@@ -48,6 +54,7 @@ src/city.js       procedural city: buildings, roads, trees, lamps, collision
 src/vehicle.js    car model + driving physics
 src/traffic.js    AI traffic
 src/player.js     character
+src/pedestrians.js sidewalk-walking civilian crowd
 src/sky.js        sun, moon, stars, fog, day/night
 src/game.js       the game loop logic (no DOM, testable)
 src/input.js      keyboard / mouse / touch
@@ -58,14 +65,14 @@ tests/smoke.mjs   headless test:  npm install && npm test
 
 ## Make the map bigger
 
-Edit `blocks` in `src/config.js` (8 -> 12 gives ~720 m). Lower `trafficCount` if it gets slow.
+Edit `blocks` in `src/config.js` to change the mobile map size; desktop automatically adds two blocks per side. Lower `trafficCount` if it gets slow.
 
 ## Roadmap (what to build next)
 
 1. **Real art:** replace boxes with free glTF models (Kenney, Quaternius, Sketchfab CC0) using Three's `GLTFLoader`. Biggest visual upgrade.
 2. **Pedestrians:** walk NavMesh/waypoints along sidewalks.
 3. **Better physics:** add Rapier (`@dimforge/rapier3d-compat`) for crashes and ragdolls.
-4. **Post-processing:** bloom, SSAO, motion blur via `EffectComposer`.
+4. **Post-processing:** optional depth-of-field, SSAO, and motion blur via `EffectComposer`.
 5. **Missions and story:** timed deliveries, police chase, save game (`localStorage`).
 6. **Terrain, water, bridges, interiors**, then streaming chunks for a huge map.
 7. **Native app:** wrap with Capacitor to publish on Play Store / App Store.

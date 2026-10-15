@@ -46,10 +46,16 @@ export class Traffic {
       const x = seg.sx + seg.dx * t, z = seg.sz + seg.dz * t;
       if (this.cars.some((c) => Math.hypot(c.car.x - x, c.car.z - z) < 7)) continue;
       if (Math.hypot(x, z) < 25 && this.cars.length < 4) continue;
-      const car = new Car(scene, Math.floor(this.rng() * 3), CAR_COLORS[Math.floor(this.rng() * CAR_COLORS.length)]);
+      const roll = this.rng();
+      const type = roll < 0.26 ? 0 : roll < 0.59 ? 1 : roll < 0.82 ? 2
+        : roll < 0.92 ? 3 : roll < 0.98 ? 4 : 5;
+      const car = new Car(scene, type, CAR_COLORS[Math.floor(this.rng() * CAR_COLORS.length)]);
       car.ai = true;
       car.place(x, z, Math.atan2(seg.dx, seg.dz));
-      this.cars.push({ car, seg, cruise: 9 + this.rng() * 5, stuck: 0, ghost: 0 });
+      this.cars.push({
+        car, seg, cruise: Math.min(9 + this.rng() * 5, car.tuning.topSpeed * 0.65),
+        stuck: 0, ghost: 0,
+      });
       return;
     }
   }
