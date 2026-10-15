@@ -1,0 +1,15 @@
+{
+  "name": "open-city",
+  "version": "0.1.0",
+  "description": "A GTA-style open-world city game that runs in the browser (desktop + phone). Built with Three.js.",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve . -l 5500",
+    "test": "node tests/smoke.mjs",
+    "vendor": "node scripts/vendor.mjs"
+  },
+  "devDependencies": {
+    "three": "0.160.0"
+  },
+  "license": "MIT"
+}

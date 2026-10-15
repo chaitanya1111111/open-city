@@ -1,0 +1,6 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "type": "chrome", "request": "launch", "name": "Debug Open City (Chrome)", "url": "http://localhost:5500/index.html", "webRoot": "${workspaceFolder}" }
+  ]
+}
